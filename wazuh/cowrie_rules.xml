@@ -1,0 +1,71 @@
+<!-- Cowrie Honeypot Rules -->
+<group name="cowrie,honeypot,">
+
+  <!-- Base rule - any Cowrie event -->
+  <rule id="100200" level="3">
+    <field name="eventid">^cowrie\.</field>
+    <description>Cowrie honeypot event detected</description>
+    <group>honeypot,</group>
+  </rule>
+
+  <!-- New connection to honeypot -->
+  <rule id="100201" level="6">
+    <field name="eventid">^cowrie\.session\.connect$</field>
+    <description>Cowrie: New connection to honeypot from $(src_ip)</description>
+    <group>honeypot,connection,</group>
+  </rule>
+
+  <!-- Failed login attempt -->
+  <rule id="100202" level="6">
+    <field name="eventid">^cowrie\.login\.failed$</field>
+    <description>Cowrie: Failed login attempt - user: $(username) pass: $(password)</description>
+    <group>honeypot,authentication_failed,</group>
+  </rule>
+
+  <!-- Successful login -->
+  <rule id="100203" level="10">
+    <field name="eventid">^cowrie\.login\.success$</field>
+    <description>Cowrie: Attacker logged into honeypot - user: $(username) pass: $(password)</description>
+    <group>honeypot,authentication_success,</group>
+  </rule>
+
+  <!-- Command executed -->
+  <rule id="100204" level="8">
+    <field name="eventid">^cowrie\.command\.input$</field>
+    <description>Cowrie: Command executed in honeypot: $(input)</description>
+    <group>honeypot,command,</group>
+  </rule>
+
+  <!-- File download attempt -->
+  <rule id="100205" level="12">
+    <field name="eventid">^cowrie\.session\.file_download$</field>
+    <description>Cowrie: File download attempted in honeypot: $(url)</description>
+    <group>honeypot,malware,</group>
+  </rule>
+
+  <!-- Brute force - 5 failed attempts in 60 seconds -->
+  <rule id="100206" level="10" frequency="5" timeframe="60">
+    <if_matched_sid>100202</if_matched_sid>
+    <description>Cowrie: Brute force attack on honeypot from $(src_ip)</description>
+    <group>honeypot,brute_force,</group>
+  </rule>
+  
+  <!-- Correlation Rule 1: Suricata alert + Cowrie connection from same IP -->
+  <rule id="100210" level="14" timeframe="300">
+    <if_matched_sid>86601</if_matched_sid>
+    <field name="eventid">^cowrie\.session\.connect$</field>
+    <same_srcip />
+    <description>CRITICAL: Attacker $(src_ip) connected to honeypot after Suricata network alert</description>
+    <group>honeypot,correlation,attack_chain,</group>
+  </rule>
+
+  <!-- Correlation Rule 2: Suricata alert + Cowrie login from same IP -->
+  <rule id="100211" level="15" timeframe="300">
+    <if_matched_sid>86601</if_matched_sid>
+    <field name="eventid">^cowrie\.login\.success$</field>
+    <same_srcip />
+    <description>CRITICAL: Attacker $(src_ip) logged into honeypot after Suricata alert - full attack chain confirmed</description>
+    <group>honeypot,correlation,attack_chain,critical,</group>
+  </rule>
+
+</group>
