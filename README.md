@@ -154,6 +154,13 @@ soc-home-lab/
 - Incidents written to SQLite ✅
 - Dashboard showing live data ✅
 - End to end attack detection pipeline ✅
+## Dashboard Screenshots
+
+### Backend & Frontend servers
+![SOC servers](screenshots/app_servers.jpg)
+
+### Full Panel View
+![SOC Panels](screenshots/app_frontend.jpg)
 
 ---
 
