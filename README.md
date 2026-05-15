@@ -7,23 +7,28 @@ custom SOAR automation, and a full stack management dashboard.
 ---
 
 ## Architecture
-Kali Linux (Attacker)  →  Lubuntu VM (Defender)
-192.168.56.40             192.168.56.12
-│
-├── Suricata IDS
-│   └── Detects network attacks
-│
-├── Cowrie Honeypot
-│   └── Captures attacker behaviour
-│
-├── Wazuh SIEM
-│   └── Correlates all log sources
-│
-├── Python SOAR
-│   └── Automates incident response
-│
-└── SOC Control Panel
-└── Full stack management dashboard
+
+```text
+Kali Linux (Attacker)       Lubuntu VM (Defender)
+192.168.56.40               192.168.56.12
+                                    │
+                          ┌─────────┴──────────┐
+                          │                    │
+                    Suricata IDS          Cowrie Honeypot
+                    (Network IDS)         (SSH Honeypot)
+                          │                    │
+                          └─────────┬──────────┘
+                                    │
+                               Wazuh SIEM
+                            (Log Correlation)
+                                    │
+                            Python SOAR Engine
+                           (Automated Response)
+                                    │
+                          SOC Control Panel
+                         (React + Flask Dashboard)
+```
+
 ---
 
 ## Components
@@ -84,24 +89,37 @@ Kali Linux (Attacker)  →  Lubuntu VM (Defender)
 ---
 
 ## Detection Pipeline
+
+```text
 Attack happens
-↓
+       │
+       ▼
 Suricata detects network anomaly
-↓
+       │
+       ▼
 Cowrie captures SSH session + credentials
-↓
+       │
+       ▼
 Both write to JSON logs
-↓
+       │
+       ▼
 Wazuh ingests and correlates
-↓
+       │
+       ▼
 SOAR reads Wazuh alerts
-↓
+       │
+       ▼
 SOAR blocks IP + logs incident
-↓
+       │
+       ▼
 Dashboard shows everything live
+```
+
 ---
 
 ## Project Structure
+
+```text
 soc-home-lab/
 ├── README.md
 ├── soar/
@@ -115,12 +133,14 @@ soc-home-lab/
 ├── wazuh/
 │   └── cowrie_rules.xml
 └── app/
-├── backend/
-│   └── app.py
-└── frontend/
-└── src/
-├── App.js
-└── App.css
+    ├── backend/
+    │   └── app.py
+    └── frontend/
+        └── src/
+            ├── App.js
+            └── App.css
+```
+
 ---
 
 ## Key Results
