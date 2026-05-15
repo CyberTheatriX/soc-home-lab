@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Node modules (React dependencies - huge folder, not your code)
+node_modules/
+
+# React build output
+app/frontend/build/
+
+# Database (contains real incident data)
+*.db
+
+# Logs
+*.log
+
+# Environment files
+.env
+
+# VS Code
+.vscode/
